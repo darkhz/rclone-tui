@@ -1,0 +1,54 @@
+project_name: rclone-tui
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+      - GOPROXY=https://proxy.golang.org
+
+    goos:
+      - linux
+      - darwin
+      - windows
+
+    goarch:
+      - arm
+      - 386
+      - arm64
+      - amd64
+
+    goarm:
+      - 5
+      - 6
+      - 7
+
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+      - goos: windows
+        goarch: arm
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+
+    format_overrides:
+      - goos: windows
+        format: zip
+
+    files:
+      - LICENSE
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  skip: true
