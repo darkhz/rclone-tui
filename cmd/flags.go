@@ -9,10 +9,13 @@ import (
 	"github.com/jnovack/flag"
 )
 
+const appVersion = "v0.0.2"
+
 // CmdOptions stores command-line options.
 type CmdOptions struct {
 	Page             string
 	Host, User, Pass string
+	Version          bool
 }
 
 var cmdOptions CmdOptions
@@ -50,6 +53,12 @@ func ParseFlags() error {
 		"",
 		"Specify a login password.",
 	)
+	fs.BoolVar(
+		&cmdOptions.Version,
+		"version",
+		false,
+		"Show version.",
+	)
 
 	fs.Usage = func() {
 		fmt.Fprintf(
@@ -78,6 +87,7 @@ func ParseFlags() error {
 
 	cmdLogin()
 	cmdPage()
+	cmdVersion()
 
 	return nil
 }
@@ -121,6 +131,16 @@ func cmdPage() {
 	}
 
 	fmt.Printf("Error: %s: No such page\n", cmdOptions.Page)
+
+	os.Exit(0)
+}
+
+func cmdVersion() {
+	if !cmdOptions.Version {
+		return
+	}
+
+	fmt.Printf("rclone-tui %s\n", appVersion)
 
 	os.Exit(0)
 }
