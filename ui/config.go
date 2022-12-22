@@ -87,9 +87,16 @@ func (c *ConfigUI) Layout() tview.Primitive {
 		return event
 	})
 	c.formUI.WizardPages.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Rune() == 's' && event.Modifiers() == tcell.ModAlt {
-			go c.saveConfig(true)
-			goto Event
+		if event.Modifiers() == tcell.ModAlt {
+			switch event.Rune() {
+			case 's':
+				go c.saveConfig(true)
+				goto Event
+
+			case 'h':
+				App.SetFocus(c.formUI.WizardHelp)
+				goto Event
+			}
 		}
 
 		switch event.Key() {
@@ -101,9 +108,6 @@ func (c *ConfigUI) Layout() tview.Primitive {
 
 		case tcell.KeyCtrlC:
 			c.wizardCancel()
-
-		case tcell.KeyCtrlH:
-			App.SetFocus(c.formUI.WizardHelp)
 		}
 
 	Event:

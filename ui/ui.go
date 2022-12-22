@@ -79,6 +79,9 @@ func SetupUI() {
 		case tcell.KeyCtrlZ:
 			appSuspend = true
 
+		case tcell.KeyCtrlH:
+			ShowHelp()
+
 		case tcell.KeyCtrlQ:
 			go StopUI()
 		}

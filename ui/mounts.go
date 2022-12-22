@@ -78,17 +78,20 @@ func (m *MountsUI) Layout() tview.Primitive {
 		return event
 	})
 	m.formUI.WizardPages.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Rune() == 'h' && event.Modifiers() == tcell.ModAlt {
+			App.SetFocus(m.formUI.WizardHelp)
+			goto Event
+		}
+
 		switch event.Key() {
 		case tcell.KeyCtrlS:
 			m.wizardCreateMount()
 
 		case tcell.KeyCtrlC:
 			m.wizardCancel()
-
-		case tcell.KeyCtrlH:
-			App.SetFocus(m.formUI.WizardHelp)
 		}
 
+	Event:
 		return event
 	})
 	m.formUI.ManagerPages.SetChangedFunc(func() {
