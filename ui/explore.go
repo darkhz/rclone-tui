@@ -449,6 +449,8 @@ func (p *Pane) ShowRemotes() {
 }
 
 // Operation executes an operation according to the key pressed.
+//
+//gocyclo:ignore
 func (p *Pane) Operation(key rune) {
 	switch key {
 	case 'p':
@@ -513,13 +515,60 @@ func (p *Pane) Operation(key rune) {
 
 		modal.Show()
 
-		return
+	case 'i':
+		if p.FS == "" {
+			return
+		}
 
-	default:
-		return
+		go p.startLoading("Loading fs information for " + p.FS)
+		defer p.stopLoading()
+
+		fsinfo, err := rcfns.FsInfo(p.ID, p.FS)
+		if err != nil {
+			ErrorMessage("Explorer", err)
+			return
+		}
+
+		modal := NewModal("fsinfo", "FS Information", false, true, 60, 100)
+		modal.TextView.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			switch event.Key() {
+			case tcell.KeyEscape:
+				modal.Exit()
+			}
+
+			return event
+		})
+
+		App.QueueUpdateDraw(func() {
+			for _, detail := range [][]string{
+				{"Name", fsinfo.Name},
+				{"Root", fsinfo.Root},
+				{"Log String", fsinfo.String},
+				{"Hashes"},
+				{"Features"},
+			} {
+				if detail[0] == "Hashes" {
+					detail = append(detail, fsinfo.Hashes...)
+				} else if detail[0] == "Features" {
+					detail = append(detail, fsinfo.FeatureList...)
+				}
+
+				if len(detail) > 2 {
+					fmt.Fprintf(modal.TextView, "\n[::bu]%s[-:-:-]\n", detail[0])
+
+					for _, d := range detail[2:] {
+						fmt.Fprintf(modal.TextView, "%s\n", d)
+					}
+
+					continue
+				}
+
+				fmt.Fprintf(modal.TextView, "[::bu]%s[-:-:-]: %s\n", detail[0], detail[1])
+			}
+
+			modal.Show()
+		})
 	}
-
-	go explorer.reloadPanes(true)
 }
 
 // Select selects multiple items within the current directory. The selected
