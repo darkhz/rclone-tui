@@ -473,6 +473,10 @@ func (p *Pane) Operation(key rune) {
 
 	case 'M':
 		dirName := SetInput("Create directory:", struct{}{})
+		if dirName == "" {
+			return
+		}
+
 		fullPath := p.FS + filepath.Join(p.Path, dirName)
 
 		go p.startLoading("Creating " + fullPath)
@@ -481,8 +485,6 @@ func (p *Pane) Operation(key rune) {
 		if err := rcfns.Mkdir(p.ID, p.FS, p.Path, dirName); err != nil {
 			ErrorMessage("Explorer", err)
 		}
-
-		go p.List()
 
 		return
 

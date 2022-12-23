@@ -74,23 +74,29 @@ func ListFS(id, fstype, path string) (List, error) {
 	}
 
 	for j, item := range list.Items {
-		modtime, _ := time.Parse(time.RFC3339, item.ModTime)
-
-		list.Items[j].ModTime = ""
-		list.Items[j].ModifiedTimeUnix = modtime.Unix()
-		list.Items[j].ModifiedTime = modtime.Format("Mon 01/02 15:04")
-
-		size := "Unknown"
-		if item.Size >= 0 {
-			size = bytefmt.ByteSize(uint64(item.Size))
-		}
-
-		list.Items[j].ISize = size
-
-		list.Items[j].FS = fs
+		list.Items[j] = appendItemDetails(item, fs)
 	}
 
 	return list, err
+}
+
+func appendItemDetails(item ListItem, fs string) ListItem {
+	modtime, _ := time.Parse(time.RFC3339, item.ModTime)
+
+	item.ModTime = ""
+	item.ModifiedTimeUnix = modtime.Unix()
+	item.ModifiedTime = modtime.Format("Mon 01/02 15:04")
+
+	size := "Unknown"
+	if item.Size >= 0 {
+		size = bytefmt.ByteSize(uint64(item.Size))
+	}
+
+	item.ISize = size
+
+	item.FS = fs
+
+	return item
 }
 
 // ListRemotes lists the configured remotes.

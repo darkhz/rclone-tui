@@ -17,14 +17,33 @@ func Mkdir(id, fs, remote, name string) error {
 		"remote": filepath.Join(remote, name),
 	}
 
-	job, err := rclone.SendCommandAsync("UI:Explorer:"+id, "Creating directory "+name, command, "/operations/mkdir")
+	job, err := rclone.SendCommandAsync(
+		"UI:Explorer:"+id, "Creating directory "+name,
+		command, "/operations/mkdir", struct{}{},
+	)
 	if err != nil {
 		return err
 	}
 
-	_, err = rclone.GetJobReply(job)
+	go rclone.MonitorJob(job, struct{}{})
 
-	return err
+	jobInfo, err := rclone.GetJobReply(job)
+	if err != nil {
+		return err
+	}
+
+	listItem, err := stat(rclone.GetClientContext(), fs, command["remote"].(string))
+	if err != nil {
+		return err
+	}
+
+	listItem = appendItemDetails(listItem, fs)
+	listItem.RefreshAddItem = true
+	job.RefreshItems = []ListItem{listItem}
+
+	rclone.StopJob(job, jobInfo.Error)
+
+	return nil
 }
 
 // PublicLink returns a public link for the provided item.
