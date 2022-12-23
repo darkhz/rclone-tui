@@ -502,8 +502,6 @@ func (p *Pane) Operation(key rune) {
 		}
 
 		modal := NewModal("public_link", "Public Link", false, true, 10, len(publiclink)+10)
-
-		modal.TextView.SetText(publiclink)
 		modal.TextView.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			switch event.Key() {
 			case tcell.KeyEscape:
@@ -513,7 +511,10 @@ func (p *Pane) Operation(key rune) {
 			return event
 		})
 
-		modal.Show()
+		App.QueueUpdateDraw(func() {
+			modal.TextView.SetText(publiclink)
+			modal.Show()
+		})
 
 	case 'i':
 		if p.FS == "" {
