@@ -42,7 +42,7 @@ Flags:
 |Suspend                     |<kbd>Ctrl</kbd>+<kbd>z</kbd>|
 |Quit                        |<kbd>Ctrl</kbd>+<kbd>q</kbd>|
 
-#### Configuration/Mounts  only
+#### Configuration/Mounts only
 |Operation                            |Keybinding                                       |
 |-------------------------------------|-------------------------------------------------|
 |Select button                        |<kbd>Enter</kbd>                                 |
@@ -97,6 +97,7 @@ Flags:
 |Delete selected items        |<kbd>d</kbd>|
 |Make directory               |<kbd>M</kbd>|
 |Generate public link for item|<kbd>;</kbd>|
+|Show remote information      |<kbd>i</kbd>|
 
 ### Mounts
 

@@ -65,6 +65,7 @@ var helpMap = map[string]map[string][]Help{
 			{"Delete selected items", "d"},
 			{"Make directory", "M"},
 			{"Generate public link for item", ";"},
+			{"Show remote information", "i"},
 		},
 	},
 	"Mounts": {
