@@ -455,9 +455,11 @@ func (p *Pane) Operation(key rune) {
 	switch key {
 	case 'p':
 		rcfns.Copy(explorer.getSelectionsList(), p.FS, p.Path)
+		go explorer.reloadPanes(true)
 
 	case 'm':
 		rcfns.Move(explorer.getSelectionsList(), p.FS, p.Path)
+		go explorer.reloadPanes(true)
 
 	case 'd':
 		list := explorer.getSelectionsList()
@@ -470,8 +472,14 @@ func (p *Pane) Operation(key rune) {
 		}
 
 		rcfns.Delete(explorer.getSelectionsList())
+		go explorer.reloadPanes(true)
 
 	case 'M':
+		if !p.Lock.TryAcquire(1) {
+			return
+		}
+		defer p.Lock.Release(1)
+
 		dirName := SetInput("Create directory:", struct{}{})
 		if dirName == "" {
 			return
@@ -486,9 +494,12 @@ func (p *Pane) Operation(key rune) {
 			ErrorMessage("Explorer", err)
 		}
 
-		return
-
 	case ';':
+		if !p.Lock.TryAcquire(1) {
+			return
+		}
+
+		defer p.Lock.Release(1)
 		_, item, err := p.getSelection()
 		if err != nil {
 			return
@@ -519,6 +530,11 @@ func (p *Pane) Operation(key rune) {
 		})
 
 	case 'i':
+		if !p.Lock.TryAcquire(1) {
+			return
+		}
+		defer p.Lock.Release(1)
+
 		if p.FS == "" {
 			return
 		}
